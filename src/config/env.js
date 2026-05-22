@@ -7,6 +7,9 @@ console.log(process.env.MONGO_URI)
 console.log(process.env.PORT)
 
 export const env = {
-    PORT: process.env.PORT,
-    MONGO_URI: process.env.MONGO_URI
+
+  PORT: process.env.PORT,
+
+  MONGO_URI: process.env.MONGO_URI
+
 }

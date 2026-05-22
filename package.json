@@ -1,24 +1,23 @@
 {
   "name": "crud-user-back-s6",
   "version": "1.0.0",
-  "description": "��#\u0000 \u0000c\u0000r\u0000u\u0000d\u0000-\u0000u\u0000s\u0000e\u0000r\u0000-\u0000b\u0000a\u0000c\u0000k\u0000-\u0000s\u00006\u0000\r\u0000 \u0000",
+  "description": "",
   "main": "app.js",
-  "type": "module",
+  "type":"module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/app.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/claudioaldrian-source/crud-user-back-s6.git"
+    "url": "git+https://github.com/nicof31/crud-user-back-s6.git"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/claudioaldrian-source/crud-user-back-s6/issues"
+    "url": "https://github.com/nicof31/crud-user-back-s6/issues"
   },
-  "homepage": "https://github.com/claudioaldrian-source/crud-user-back-s6#readme",
+  "homepage": "https://github.com/nicof31/crud-user-back-s6#readme",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
