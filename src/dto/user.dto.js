@@ -16,26 +16,26 @@ const createUserSchema = Joi.object({
 
   telefono: Joi.string().required(),
 
-  direccion: Joi.string().required()
+  direccion: Joi.string().required(),
+  ciudad: Joi.string().required(),
+  provincia: Joi.string().required(),
+  pais: Joi.string().required(),
+  cp: Joi.number().required()
 
 })
 
 const updateUserSchema = Joi.object({
-
   nombre: Joi.string(),
-
   apellido: Joi.string(),
-
   password: Joi.string().min(6),
-
   edad: Joi.number(),
-
   sexo: Joi.string(),
-
   telefono: Joi.string(),
-
-  direccion: Joi.string()
-
+  direccion: Joi.string(),
+  ciudad: Joi.string(),
+  provincia: Joi.string(),
+  pais: Joi.string(),
+  cp: Joi.number()
 })
 
 export {
