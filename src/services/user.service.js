@@ -45,23 +45,18 @@ const createUserService = async (data) => {
   )
 
   const user = new User({
-
     nombre: data.nombre,
-
     apellido: data.apellido,
-
     email: data.email,
-
     password: hashedPassword,
-
     edad: data.edad,
-
     sexo: data.sexo,
-
     telefono: data.telefono,
-
-    direccion: data.direccion
-
+    direccion: data.direccion,
+    ciudad: data.ciudad,
+    provincia: data.provincia,
+    pais: data.pais,
+    cp: data.cp
   })
 
   await user.save()
@@ -74,7 +69,11 @@ const createUserService = async (data) => {
     edad: user.edad,
     sexo: user.sexo,
     telefono: user.telefono,
-    direccion: user.direccion
+    direccion: user.direccion,
+    ciudad: user.ciudad,
+    provincia: user.provincia,
+    pais: user.pais,
+    cp: user.cp
   }
 
   } catch (error) {
@@ -117,6 +116,10 @@ const updateUserService = async (id, data) => {
   if (data.telefono) user.telefono = data.telefono
 
   if (data.direccion) user.direccion = data.direccion
+  if (data.ciudad) user.ciudad = data.ciudad
+  if (data.provincia) user.provincia = data.provincia
+  if (data.pais) user.pais = data.pais
+  if (data.cp) user.cp = data.cp
 
   // Cambiar password si viene
   if (data.password) {
@@ -138,7 +141,11 @@ const updateUserService = async (id, data) => {
     edad: user.edad,
     sexo: user.sexo,
     telefono: user.telefono,
-    direccion: user.direccion
+    direccion: user.direccion,
+    ciudad: user.ciudad,
+    provincia: user.provincia,
+    pais: user.pais,
+    cp: user.cp
   }
 
   } catch (error) {
