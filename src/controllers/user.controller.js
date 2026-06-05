@@ -2,7 +2,9 @@ import {
 
   createUserSchema,
 
-  updateUserSchema
+  updateUserSchema,
+  userParamsSchema
+
 
 } from '../dto/user.dto.js'
 
@@ -33,9 +35,7 @@ const getUsers = async (req, res) => {
     res.status(500).json({
       error: error.message
     })
-
   }
-
 }
 
 const createUser = async (req, res) => {
@@ -45,14 +45,13 @@ const createUser = async (req, res) => {
     console.log('🎮 CONTROLLER → createUser')
 
     // VALIDAR DTO
-    const { error } = createUserSchema.validate(req.body)
+    const { error: paramsError } = createUserSchema.validate(req.body)
 
     if (error) {
 
       return res.status(400).json({
         error: error.details[0].message
       })
-
     }
 
     const user = await createUserService(req.body)
@@ -64,9 +63,7 @@ const createUser = async (req, res) => {
     res.status(500).json({
       error: error.message
     })
-
   }
-
 }
 
 const updateUser = async (req, res) => {
@@ -83,7 +80,6 @@ const updateUser = async (req, res) => {
       return res.status(400).json({
         error: error.details[0].message
       })
-
     }
 
     const user = await updateUserService(
@@ -98,15 +94,12 @@ const updateUser = async (req, res) => {
     res.status(500).json({
       error: error.message
     })
-
   }
-
 }
 
 const deleteUser = async (req, res) => {
 
   try {
-
     console.log('🎮 CONTROLLER → deleteUser')
 
     const result = await deleteUserService(req.params.id)
@@ -118,19 +111,12 @@ const deleteUser = async (req, res) => {
     res.status(500).json({
       error: error.message
     })
-
   }
-
 }
 
 export {
-
   getUsers,
-
   createUser,
-
   updateUser,
-
   deleteUser
-
 }
