@@ -1,122 +1,158 @@
 import {
-
   createUserSchema,
-
   updateUserSchema,
-  userParamsSchema
-
-
-} from '../dto/user.dto.js'
+  userParamsSchema,
+} from "../dto/user.dto.js";
 
 import {
-
   getUsersService,
-
   createUserService,
-
   updateUserService,
+  deleteUserService,
+} from "../services/user.service.js";
 
-  deleteUserService
-
-} from '../services/user.service.js'
+import {
+  successResponse,
+  errorResponse,
+} from "../helpers/response.helper.js";
 
 const getUsers = async (req, res) => {
-
   try {
+    const { email, id } = req.query;
 
-    console.log('🎮 CONTROLLER → getUsers')
+    const users = await getUsersService({
+      email,
+      id,
+    });
 
-    const users = await getUsersService()
-
-    res.json(users)
-
+    return successResponse(
+      res,
+      users,
+      "Usuarios obtenidos correctamente"
+    );
   } catch (error) {
-
-    res.status(500).json({
-      error: error.message
-    })
+    return errorResponse(
+      res,
+      error.message || "Error interno del servidor",
+      error.statusCode || 500,
+      error.errors || null
+    );
   }
-}
+};
 
 const createUser = async (req, res) => {
-
   try {
-
-    console.log('🎮 CONTROLLER → createUser')
-
-    // VALIDAR DTO
-    const { error: paramsError } = createUserSchema.validate(req.body)
+    const { error } = createUserSchema.validate(req.body);
 
     if (error) {
-
-      return res.status(400).json({
-        error: error.details[0].message
-      })
+      return errorResponse(
+        res,
+        "Error de validación",
+        400,
+        error.details
+      );
     }
 
-    const user = await createUserService(req.body)
+    const user = await createUserService(req.body);
 
-    res.status(201).json(user)
-
+    return successResponse(
+      res,
+      user,
+      "Usuario creado correctamente",
+      201
+    );
   } catch (error) {
-
-    res.status(500).json({
-      error: error.message
-    })
+    return errorResponse(
+      res,
+      error.message || "Error interno del servidor",
+      error.statusCode || 500,
+      error.errors || null
+    );
   }
-}
+};
 
 const updateUser = async (req, res) => {
-
   try {
+    const { error: paramsError } =
+      userParamsSchema.validate(req.params);
 
-    console.log('🎮 CONTROLLER → updateUser')
+    if (paramsError) {
+      return errorResponse(
+        res,
+        "Id inválido",
+        400,
+        paramsError.details
+      );
+    }
 
-    // VALIDAR DTO
-    const { error } = updateUserSchema.validate(req.body)
+    const { error } =
+      updateUserSchema.validate(req.body);
 
     if (error) {
-
-      return res.status(400).json({
-        error: error.details[0].message
-      })
+      return errorResponse(
+        res,
+        "Error de validación",
+        400,
+        error.details
+      );
     }
 
     const user = await updateUserService(
       req.params.id,
       req.body
-    )
+    );
 
-    res.json(user)
-
+    return successResponse(
+      res,
+      user,
+      "Usuario actualizado correctamente"
+    );
   } catch (error) {
-
-    res.status(500).json({
-      error: error.message
-    })
+    return errorResponse(
+      res,
+      error.message || "Error interno del servidor",
+      error.statusCode || 500,
+      error.errors || null
+    );
   }
-}
+};
 
 const deleteUser = async (req, res) => {
-
   try {
-    console.log('🎮 CONTROLLER → deleteUser')
+    const { error: paramsError } =
+      userParamsSchema.validate(req.params);
 
-    const result = await deleteUserService(req.params.id)
+    if (paramsError) {
+      return errorResponse(
+        res,
+        "Id inválido",
+        400,
+        paramsError.details
+      );
+    }
 
-    res.json(result)
+    const result = await deleteUserService(
+      req.params.id
+    );
 
+    return successResponse(
+      res,
+      result,
+      "Usuario eliminado correctamente"
+    );
   } catch (error) {
-
-    res.status(500).json({
-      error: error.message
-    })
+    return errorResponse(
+      res,
+      error.message || "Error interno del servidor",
+      error.statusCode || 500,
+      error.errors || null
+    );
   }
-}
+};
 
 export {
   getUsers,
   createUser,
   updateUser,
-  deleteUser
-}
+  deleteUser,
+};

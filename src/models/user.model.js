@@ -4,63 +4,68 @@ const userSchema = new mongoose.Schema({
 
   nombre: {
     type: String,
-    required: true
+    required: true,
   },
 
   apellido: {
     type: String,
-    required: true
+    required: true,
   },
 
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
 
   password: {
     type: String,
-    required: true
+    required: true,
+  },
+
+  fechaNacimiento: {
+    type: date,
+    required: true,
   },
 
   edad: {
     type: Number,
-    required: true
+    required: true,
   },
 
-  sexo: {
+  genero: {
     type: String,
-    required: true
+    required: true,
   },
 
   telefono: {
     type: String,
-    required: true
+    required: true,
   },
 
   direccion: {
     type: String,
-    required: true
+    required: true,
   },
-  ciudad: {
+  localidad: {
     type: String,
-    required: true
+    required: true,
   },
   provincia: {
     type: String,
-    required: true
+    required: true,
   },
   pais: {
     type: String,
-    required: true
+    required: true,
   },
-  cp: {
-    type: Number,
-    required: true
+  codigoPostal: {
+    type: String,
+    required: true,
   }
 
 }, {
-  timestamps: true
+  timestamps: true,
 })
 
 const User = mongoose.model('User', userSchema)

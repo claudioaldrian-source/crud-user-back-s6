@@ -1,204 +1,303 @@
-import bcrypt from 'bcryptjs'
+import bcrypt from "bcryptjs";
+import User from "../models/user.model.js";
+import Audit from "../models/audit.model.js";
+import mongoose from "mongoose";
 
-import User from '../models/user.model.js'
-
-import Audit from '../models/audit.model.js'
-
-
-const getUsersService = async () => {
+const getUsersService = async ({ email, id }) => {
+  console.log("📦 SERVICE → getUsersService");
 
   try {
+    // Buscar por ID
+    if (id) {
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw {
+          statusCode: 400,
+          message: "Id inválido",
+        };
+      }
 
-    console.log('📦 SERVICE → getUsersService')
+      const user = await User.findById(id)
+        .select("-password");
 
-    const users = await User.find().select('-password')
+      if (!user) {
+        throw {
+          statusCode: 404,
+          message: "Usuario no encontrado",
+        };
+      }
 
-    return users
+      return user;
+    }
+
+    // Buscar por email
+    if (email) {
+      const user = await User.findOne({
+        email,
+      }).select("-password");
+
+      if (!user) {
+        throw {
+          statusCode: 404,
+          message: "Usuario no encontrado",
+        };
+      }
+
+      return user;
+    }
+
+    // Obtener todos
+    return await User.find()
+      .select("-password")
+      .sort({ nombre: 1 });
 
   } catch (error) {
+    console.error(
+      "❌ Error en getUsersService:",
+      error
+    );
 
-    throw error
-
+    throw {
+      statusCode:
+        error.statusCode || 500,
+      message:
+        error.message ||
+        "Error interno del servidor",
+      errors:
+        error.errors || null,
+    };
   }
-
-}
+};
 
 const createUserService = async (data) => {
+  console.log("📦 SERVICE → createUserService");
 
   try {
-
-    console.log('📦 SERVICE → createUserService')
-
-    console.log(data)
-
     const existUser = await User.findOne({
-    email: data.email
-  })
+      email: data.email,
+    });
 
-  if (existUser) {
-    throw new Error('El usuario ya existe')
-  }
-
-  const hashedPassword = await bcrypt.hash(
-    data.password,
-    10
-  )
-
-  const user = new User({
-    nombre: data.nombre,
-    apellido: data.apellido,
-    email: data.email,
-    password: hashedPassword,
-    edad: data.edad,
-    sexo: data.sexo,
-    telefono: data.telefono,
-    direccion: data.direccion,
-    ciudad: data.ciudad,
-    provincia: data.provincia,
-    pais: data.pais,
-    cp: data.cp
-  })
-
-  await user.save()
-
-  return {
-    id: user._id,
-    nombre: user.nombre,
-    apellido: user.apellido,
-    email: user.email,
-    edad: user.edad,
-    sexo: user.sexo,
-    telefono: user.telefono,
-    direccion: user.direccion,
-    ciudad: user.ciudad,
-    provincia: user.provincia,
-    pais: user.pais,
-    cp: user.cp
-  }
-
-  } catch (error) {
-
-    throw error
-
-  }
-
-}
-
-const updateUserService = async (id, data) => {
-
-  try {
-
-    console.log('📦 SERVICE → updateUserService')
-
-    console.log(id)
-    console.log(data)
-
-    const user = await User.findById(id)
-
-  if (!user) {
-    throw new Error('Usuario no encontrado')
-  }
-
-  // NO permitir cambiar email
-  if (data.email) {
-    throw new Error('El email no puede modificarse')
-  }
-
-  // Update parcial
-  if (data.nombre) user.nombre = data.nombre
-
-  if (data.apellido) user.apellido = data.apellido
-
-  if (data.edad) user.edad = data.edad
-
-  if (data.sexo) user.sexo = data.sexo
-
-  if (data.telefono) user.telefono = data.telefono
-
-  if (data.direccion) user.direccion = data.direccion
-  if (data.ciudad) user.ciudad = data.ciudad
-  if (data.provincia) user.provincia = data.provincia
-  if (data.pais) user.pais = data.pais
-  if (data.cp) user.cp = data.cp
-
-  // Cambiar password si viene
-  if (data.password) {
-
-    user.password = await bcrypt.hash(
-      data.password,
-      10
-    )
-
-  }
-
-  await user.save()
-
-  return {
-    id: user._id,
-    nombre: user.nombre,
-    apellido: user.apellido,
-    email: user.email,
-    edad: user.edad,
-    sexo: user.sexo,
-    telefono: user.telefono,
-    direccion: user.direccion,
-    ciudad: user.ciudad,
-    provincia: user.provincia,
-    pais: user.pais,
-    cp: user.cp
-  }
-
-  } catch (error) {
-
-    throw error
-
-  }
-
-}
-
-const deleteUserService = async (id) => {
-
-  try {
-
-    console.log('📦 SERVICE → deleteUserService')
-
-    console.log(id)
-
-    const user = await User.findById(id)
-
-    if (!user) {
-      throw new Error('Usuario no encontrado')
+    if (existUser) {
+      throw {
+        statusCode: 409,
+        message: "El usuario ya existe",
+      };
     }
 
-    // AUDITORIA
-    await Audit.create({
+    const hashedPassword = await bcrypt.hash(
+      data.password,
+      10,
+    );
 
-      usuarioEliminado: user
+    const user = new User({
+      nombre: data.nombre,
+      apellido: data.apellido,
+      email: data.email,
+      password: hashedPassword,
+      fechaNacimiento: data.fechaNacimiento,
+      edad: data.edad,
+      genero: data.genero,
+      telefono: data.telefono,
+      direccion: data.direccion,
+      localidad: data.localidad,
+      provincia: data.provincia,
+      pais: data.pais,
+      codigoPostal: data.codigoPostal,
+    });
 
-    })
-
-    await User.findByIdAndDelete(id)
+    await user.save();
 
     return {
-      message: 'Usuario eliminado'
+      id: user._id,
+      nombre: user.nombre,
+      apellido: user.apellido,
+      email: user.email,
+      fechaNacimiento: user.fechaNacimiento,
+      edad: user.edad,
+      genero: user.genero,
+      telefono: user.telefono,
+      direccion: user.direccion,
+      localidad: user.localidad,
+      provincia: user.provincia,
+      pais: user.pais,
+      codigoPostal: user.codigoPostal,
+    };
+  } catch (error) {
+    console.error(
+      "❌ Error en createUserService:",
+      error
+    );
+
+    throw {
+      statusCode:
+        error.statusCode || 500,
+      message:
+        error.message ||
+        "Error interno del servidor",
+      errors:
+        error.errors || null,
+    };
+  }
+};
+
+const updateUserService = async (id, data) => {
+  console.log("📦 SERVICE → updateUserService");
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw {
+        statusCode: 400,
+        message: "Id inválido",
+      };
     }
 
+    const user = await User.findById(id);
+
+    if (!user) {
+      throw {
+        statusCode: 404,
+        message: "Usuario no encontrado",
+      };
+    }
+
+    // El email existe pero no es modificable
+    if (data.email !== undefined) {
+      throw {
+        statusCode: 400,
+        message: "El email no puede modificarse",
+      };
+    }
+
+    const allowedFields = [
+      "nombre",
+      "apellido",
+      "fechaNacimiento",
+      "edad",
+      "genero",
+      "telefono",
+      "direccion",
+      "localidad",
+      "provincia",
+      "pais",
+      "codigoPostal",
+    ];
+
+    allowedFields.forEach((field) => {
+      if (data[field] !== undefined) {
+        user[field] = data[field];
+      }
+    });
+
+    // Actualizar password si viene informada
+    if (data.password !== undefined) {
+      user.password = await bcrypt.hash(
+        data.password,
+        10
+      );
+    }
+
+    await user.save();
+
+    return {
+      id: user._id,
+      nombre: user.nombre,
+      apellido: user.apellido,
+      email: user.email,
+      fechaNacimiento: user.fechaNacimiento,
+      edad: user.edad,
+      genero: user.genero,
+      telefono: user.telefono,
+      direccion: user.direccion,
+      localidad: user.localidad,
+      provincia: user.provincia,
+      pais: user.pais,
+      codigoPostal: user.codigoPostal,
+    };
   } catch (error) {
+    console.error(
+      "❌ Error en updateUserService:",
+      error
+    );
 
-    throw error
-
+    throw {
+      statusCode:
+        error.statusCode || 500,
+      message:
+        error.message ||
+        "Error interno del servidor",
+      errors:
+        error.errors || null,
+    };
   }
+};
 
-}
+const deleteUserService = async (id) => {
+  console.log("📦 SERVICE → deleteUserService");
+
+  let session;
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw {
+        statusCode: 400,
+        message: "Id inválido",
+      };
+    }
+
+    session = await mongoose.startSession();
+
+    await session.withTransaction(async () => {
+      const user = await User.findById(id)
+        .session(session);
+
+      if (!user) {
+        throw {
+          statusCode: 404,
+          message: "Usuario no encontrado",
+        };
+      }
+
+      await Audit.create(
+        [
+          {
+            usuarioEliminado: user.toObject(),
+            fechaEliminacion: new Date(),
+          },
+        ],
+        { session }
+      );
+
+      await user.deleteOne({ session });
+    });
+
+    return {
+      message: "Usuario eliminado",
+    };
+
+  } catch (error) {
+    console.error(
+      "❌ Error en deleteUserService:",
+      error
+    );
+
+    throw {
+      statusCode:
+        error.statusCode || 500,
+      message:
+        error.message ||
+        "Error interno del servidor",
+      errors:
+        error.errors || null,
+    };
+  } finally {
+    if (session) {
+      await session.endSession();
+    }
+  }
+};
 
 export {
-
   getUsersService,
-
   createUserService,
-
   updateUserService,
-
-  deleteUserService
-
-}
+  deleteUserService,
+};
