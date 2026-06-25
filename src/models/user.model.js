@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
 
@@ -62,11 +62,21 @@ const userSchema = new mongoose.Schema({
   codigoPostal: {
     type: String,
     required: true,
-  }
+  },
 
-}, {
-  timestamps: true,
-})
+  role: {
+    type: String,
+    enum: ["ROOT", "ADMIN", "USER", "GUEST"],
+    default: "USER",
+  },
+  ultimoLogin: {
+    type: Date,
+    default: null,
+  },
+}, 
+
+{ timestamps: true})
+
 
 const User = mongoose.model('User', userSchema)
 

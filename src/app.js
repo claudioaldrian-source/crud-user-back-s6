@@ -1,11 +1,12 @@
 import express from 'express'
 
 import './config/env.js'
-/* 
-import connectDB from './config/db.js' */
+
+/* import connectDB from './config/db.js' */
 import  connectDB  from './config/db.js'
 
 import userRoutes from './routes/user.routes.js'
+import authRoutes from './routes/user.routes.js';
 
 const app = express()
 
@@ -14,6 +15,7 @@ app.use(express.json())
 connectDB()
 
 app.use(userRoutes)
+app.use("/auth", authRoutes);
 
 app.listen(process.env.PORT, () => {
 

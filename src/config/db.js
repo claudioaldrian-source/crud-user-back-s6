@@ -1,10 +1,7 @@
 import mongoose from 'mongoose'
-
 import { env } from './env.js'
 
-
  const connectDB = async () => {
-
   try {
 
     console.log('🔄 Conectando MongoDB...')
@@ -18,7 +15,6 @@ import { env } from './env.js'
     console.log('❌ Error conectando MongoDB')
 
     console.log(error)
-
   }
 
 }
