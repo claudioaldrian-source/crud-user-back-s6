@@ -29,12 +29,7 @@ const rateLimiter = rateLimit({
         reason: "Rate limit exceeded",
       },
     });
-    errorResponse(
-      res,
-      "Demasiadas solicitudes. Intente nuevamente en unos minutos.",
-      429,
-      null
-    );
+    errorResponse(res, "Demasiadas solicitudes. Intente nuevamente en unos minutos.", 429, null);
   },
 });
 
